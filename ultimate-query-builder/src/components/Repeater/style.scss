@@ -1,0 +1,116 @@
+.uqb-repeater-fields-wrapper {
+    .uqb-repeater-fields {
+        margin: 10px 0;
+
+        .uqb-repeater-row-tools {
+            display: table;
+            table-layout: fixed;
+            width: 100%;
+            color: #556068;
+            background-color: #d5dadf;
+            height: 40px;
+            border-spacing: 1px;
+            -webkit-transition: all .5s;
+            -o-transition: all .5s;
+            transition: all .5s;
+
+            & > div {
+                display: table-cell;
+                text-align: center;
+                vertical-align: middle;
+                cursor: pointer;
+
+                &.uqb-repeater-row-item-title {
+                    text-align: left;
+                    padding: 0 10px;
+                    font-size: 12px;
+                    white-space: nowrap;
+                    -o-text-overflow: ellipsis;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                    background-color: #ffffff;
+                }
+            }
+
+            .uqb-repeater-row-tool {
+                width: 40px;
+                background-color: #ffffff;
+                svg {
+                    width: 13px;
+                    height: 13px;
+                }
+            }
+        }
+        .uqb-repeater-row-controls {
+            border: 1px solid #d5dadf;
+            border-top: 0 solid #d5dadf;
+            padding-top: 15px;
+            display: none;
+            &.editable {
+                display: block;
+            }
+            .uqb-control {
+                padding-right: 10px;
+                padding-left: 10px;
+                padding-bottom: 10px;
+                .uqb-control-content {
+                    display: flex;
+                    flex-direction: column;
+                    label {
+                        font-size: 12px;
+                        line-height: 1;
+                        margin-right: 5px;
+                        input {
+                            margin-top: 5px;
+                            padding: 5px 5px 5px 10px;
+                            border-radius: 3px;
+                            font-size: 12px;
+                            width: 100%;
+                            background: none;
+                            box-shadow: none;
+                            color: #6d7882;
+                            border: 1px solid #d5dadf;
+                            outline: none;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.uqb-control-button-wrapper {
+    text-align: center;
+    .uqb-repeater-add {
+        & > svg {
+            fill: #ffffff;
+            width: 11px;
+            margin-right: 5px;
+            position: relative;
+            top: 2px;
+        }
+        background-color: #a4afb7;
+        color: #fff;
+        font-size: 11px;
+        padding: 7px 21px;
+        font-weight: 500;
+        text-transform: uppercase;
+        outline: none;
+        border: none;
+        border-radius: 3px;
+        -webkit-transition-property: background,color,opacity,-webkit-box-shadow;
+        transition-property: background,color,opacity,-webkit-box-shadow;
+        -o-transition-property: background,color,box-shadow,opacity;
+        transition-property: background,color,box-shadow,opacity;
+        transition-property: background,color,box-shadow,opacity,-webkit-box-shadow;
+        -webkit-transition-duration: .3s;
+        -o-transition-duration: .3s;
+        transition-duration: .3s;
+        cursor: pointer;
+        &:hover {
+            background-color: #6d7882;
+            -webkit-box-shadow: 0 0 2px rgb(0 0 0 / 12%), 0 2px 2px rgb(0 0 0 / 20%);
+            box-shadow: 0 0 2px rgb(0 0 0 / 12%), 0 2px 2px rgb(0 0 0 / 20%);
+        }
+    }
+}
