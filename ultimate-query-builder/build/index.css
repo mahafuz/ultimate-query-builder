@@ -1,0 +1,34 @@
+/**
+ * The following styles get applied inside the editor only.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+.uqb-select-post-type-control-wrap .searchWrapper,
+.uqb-select-taxonomy-control-wrap .searchWrapper {
+  min-height: 40px;
+}
+.uqb-select-post-type-control-wrap .search-wrapper.searchWrapper.singleSelect,
+.uqb-select-taxonomy-control-wrap .search-wrapper.searchWrapper.singleSelect {
+  position: relative;
+}
+.uqb-select-post-type-control-wrap .search-wrapper.searchWrapper.singleSelect input#uqb_post_type_input,
+.uqb-select-post-type-control-wrap .search-wrapper.searchWrapper.singleSelect input#uqb_post_taxonomy_input,
+.uqb-select-taxonomy-control-wrap .search-wrapper.searchWrapper.singleSelect input#uqb_post_type_input,
+.uqb-select-taxonomy-control-wrap .search-wrapper.searchWrapper.singleSelect input#uqb_post_taxonomy_input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+.uqb-select-post-type-control-wrap span.chip.singleChip,
+.uqb-select-taxonomy-control-wrap span.chip.singleChip {
+  margin: 0;
+}
+
+.uqb-select-terms-control-wrap .multiSelectContainer input {
+  width: 100%;
+}
+
+/*# sourceMappingURL=index.css.map*/

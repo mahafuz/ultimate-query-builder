@@ -42,10 +42,10 @@ registerBlockType( 'uqb/query-builder', {
 	category: "widgets",
 	attributes: {
 		postType : {
-			type    : 'string'
+			type    : 'array'
 		},
 		taxonomy : {
-			type : 'string'
+			type : 'array'
 		},
 		terms : {
 			type : 'array'

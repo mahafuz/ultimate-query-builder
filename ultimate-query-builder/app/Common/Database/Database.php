@@ -577,6 +577,50 @@ class Database {
 	}
 
 	/**
+	 * Get the current escape options.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return integer The current escape options.
+	 */
+	public function getEscapeOptions() {
+		return $this->escapeOptions;
+	}
+
+	/**
+	 * Escape a value for safe use in SQL queries.
+	 *
+	 * @param string  $value   The value to be escaped.
+	 * @param boolean $options Escape options.
+	 * @return string          The escaped SQL value.
+	 */
+	public function escape( $value, $options = null ) {
+		if ( is_array( $value ) ) {
+			foreach ( $value as &$val ) {
+				$val = $this->escape( $val, $options );
+			}
+
+			return $value;
+		} else {
+			$options = ( is_null( $options ) ) ? $this->getEscapeOptions() : $options;
+			if ( ( $options & self::ESCAPE_STRIP_HTML ) !== 0 && isset( $this->stripTags ) && true === $this->stripTags ) {
+				$value = wp_strip_all_tags( $value );
+			}
+
+			if ( ( $options & self::ESCAPE_FORCE ) !== 0 || php_sapi_name() === 'cli' ) {
+				$value = $this->db->_real_escape( $value );
+			}
+
+			if ( ( $options & self::ESCAPE_QUOTE ) !== 0 && ! is_integer( $value ) ) {
+				$value = addslashes( $value );
+				$value = "'$value'";
+			}
+
+			return $value;
+		}
+	}
+
+	/**
 	 * Adds a SELECT clause.
 	 *
 	 * @since 1.0.0

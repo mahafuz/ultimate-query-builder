@@ -191,7 +191,7 @@ class Helpers {
 
 			$name = $taxObject->name;
 
-			$taxonomies[] = [
+			$taxonomies[ $taxObject->object_type[0] ][] = [
 				'name'         => $name,
 				'label'        => ucwords( $taxObject->label ),
 				'singular'     => ucwords( $taxObject->labels->singular_name ),
@@ -215,5 +215,16 @@ class Helpers {
 			}
 		}
 		return $terms;
+	}
+
+	/**
+	 * Checks whether WooCommerce is active.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return boolean Whether WooCommerce is active.
+	 */
+	public function isWooCommerceActive() {
+		return class_exists( 'woocommerce' );
 	}
 }

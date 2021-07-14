@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 /**
  * Retrieves the translation of text.
  *
@@ -40,11 +40,8 @@ const icons = {
   * @return {WPElement} Element to render.
   */
 export default function Repeater({ attributes, setAttributes }) {
-	const [items, setItems] = useState([
-		{ id: 1, key: 'meta_key_1', value: 'meta_key_value_1', operator: 'IN' },
-		{ id: 2, key: 'meta_key_2', value: 'meta_key_value_2', operator: 'NOT IN' },
-		{ id: 3, key: 'meta_key_3', value: 'meta_key_value_3', operator: '<'}
-	]);
+	const { customFields } = attributes;
+	const [items, setItems] = useState(customFields || [{ id: 1, meta_key: 'Title', value: '', operator: '' }]);
 
 	const [collapsedId, setCollapsedId] = useState(null);
 
@@ -66,25 +63,36 @@ export default function Repeater({ attributes, setAttributes }) {
 	}
 
 	const handleAddItem = () => {
-		const newItem = [{ id: items.length + 1, key: 'Title', value: '', operator: '' }];
+		const newItem = [{ id: items.length + 1, meta_key: 'Title', value: '', operator: '' }];
 		setItems([
 			...items,
 			...newItem
 		]);
 	}
 
+	const handleMetaKeyChange = (ev, index) => {
+		const newItems = [...items];
+		const name = ev.target.name;
+		newItems[index][name] = ev.target.value;
+		setItems(newItems);
+	}
+
+	useEffect( () => {
+		setAttributes({ customFields: items });
+	}, [items] );
+
     return (
 		<div className="uqb-control-wrapper">
 			<h4 className="uqb-control-title">{ __( 'Custom Fields key/value', 'uqb' ) }</h4>
 			<div className="uqb-repeater-fields-wrapper">
-				{ items.map( (item) => (
-					<div className="uqb-repeater-fields" key={item.id}>
+				{ items.map( (item, index) => (
+					<div className="uqb-repeater-fields" key={index}>
 						<div className="uqb-repeater-row-tools">
 							<div
 								className="uqb-repeater-row-item-title"
 								onClick={ () => setCollapsedId(item.id) }
 							>
-								{item.key}
+								{item.meta_key}
 							</div>
 
 							<div
@@ -103,7 +111,7 @@ export default function Repeater({ attributes, setAttributes }) {
 								<div className="uqb-control-content">
 									<label htmlFor="meta_key">
 										{ __( 'Name/Key', 'uqb' ) }
-										<input type="text" name="meta_key" value={item.key} />
+										<input type="text" name="meta_key" value={item.meta_key} onChange={ (e) => handleMetaKeyChange(e, index) }/>
 									</label>
 								</div>
 							</div>
@@ -111,7 +119,7 @@ export default function Repeater({ attributes, setAttributes }) {
 								<div className="uqb-control-content">
 									<label htmlFor="meta_value">
 										{ __( 'Value', 'uqb' ) }
-										<input type="text" name="meta_value" value={item.value} />
+										<input type="text" name="meta_value" value={item.meta_value} onChange={ (e) => handleMetaKeyChange(e, index) } />
 									</label>
 								</div>
 							</div>
@@ -119,7 +127,7 @@ export default function Repeater({ attributes, setAttributes }) {
 								<div className="uqb-control-content">
 									<label htmlFor="compare_operator">
 										{ __( 'Compare Operator', 'uqb' ) }
-										<input type="text" name="compare_operator" value={item.operator} />
+										<input type="text" name="operator" value={item.operator} onChange={ (e) => handleMetaKeyChange(e, index) }/>
 									</label>
 								</div>
 							</div>

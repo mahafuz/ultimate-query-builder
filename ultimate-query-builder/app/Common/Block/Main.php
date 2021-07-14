@@ -35,10 +35,10 @@ class Main extends \UQB\Plugin\Common\Utils\Blocks {
 				'editor_script'   => 'create-block-uqb-block-editor',
 				'attributes'      => [
 					'postType'     => [
-						'type' => 'string'
+						'type' => 'array'
 					],
 					'taxonomy'     => [
-						'type' => 'string'
+						'type' => 'array'
 					],
 					'terms'        => [
 						'type' => 'array'
@@ -66,7 +66,21 @@ class Main extends \UQB\Plugin\Common\Utils\Blocks {
 	 * @param  array  $blockAttributes The block attributes.
 	 * @return string                  The output from the output buffering.
 	 */
-	public function render( $blockAttributes ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+	public function render( $blockAttributes ) {
+		$postType     = ! empty( $blockAttributes['postType'] ) ? reset( $blockAttributes['postType'] ) : false;
+		$taxonomy     = ! empty( $blockAttributes['taxonomy'] ) ? reset( $blockAttributes['taxonomy'] ) : false;
+		$terms        = ! empty( $blockAttributes['terms'] ) ? reset( $blockAttributes['terms'] ) : false;
+		$customFields = ! empty( $blockAttributes['customFields'] ) ? $blockAttributes['customFields'] : false;
+		$additionalArgs = [
+			'taxonomy'     => $taxonomy,
+			'terms'        => $terms,
+			'customFields' => $customFields
+		];
+
+		$posts = uqb()->query->posts( $postType['value'], $additionalArgs );
+
+		echo '<pre>', print_r( $posts ), '</pre>';
+
 		return '<h1>Hello World</h1>';
 	}
 }

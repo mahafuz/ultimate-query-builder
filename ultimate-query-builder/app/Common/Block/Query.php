@@ -21,86 +21,56 @@ class Query {
 	 * @param  array $additionalArgs Any additional arguments for the post query.
 	 * @return array                 The post objects.
 	 */
-	public function posts( $postTypes, $additionalArgs = [] ) {
-		$includedPostTypes = $postTypes;
-		if ( is_array( $postTypes ) ) {
-			$includedPostTypes = implode( "', '", $postTypes );
-		}
+	public function posts( $postType, $additionalArgs = [] ) {
 
-		if ( empty( $includedPostTypes ) || ( 'attachment' === $includedPostTypes  ) ) {
+		if ( empty( $postType ) ) {
 			return [];
 		}
 
 		// Set defaults.
-		$fields  = '`p`.`ID`, `p`.`post_title`, `p`.`post_content`, `p`.`post_excerpt`, `p`.`post_type`, `p`.`post_password`, ';
-		$fields .= '`p`.`post_parent`, `p`.`post_date_gmt`, `p`.`post_modified_gmt`, `ap`.`priority`, `ap`.`frequency`';
+		$fields  = '`ID`, `post_title`, `post_excerpt` ';
+		$fields .= '`post_parent`, `post_date_gmt`, `post_modified_gmt`, `post_type` ';
 		$maxAge  = '';
-		$orderBy = '`p`.`ID` ASC';
+		$orderBy = '`ID` ASC';
 
 		// Override defaults if passed as additional arg.
-		foreach ( $additionalArgs as $name => $value ) {
-			// Attachments need to be fetched with all their fields because we need to get their post parent further down the line.
-			$$name = esc_sql( $value );
-			if ( 'root' === $name && $value && 'attachment' !== $includedPostTypes ) {
-				$fields = '`p`.`ID`, `p`.`post_type`';
-			}
-		}
+		// foreach ( $additionalArgs as $name => $value ) {
+		// 	// Attachments need to be fetched with all their fields because we need to get their post parent further down the line.
+		// 	$$name = esc_sql( $value );
+		// 	if ( 'root' === $name && $value && 'attachment' !== $postType ) {
+		// 		$fields = '`p`.`ID`, `p`.`post_type`';
+		// 	}
+		// }
 
 		$query = uqb()->db
-			->start( uqb()->db->db->posts . ' as p', true )
+			->start( 'posts' )
 			->select( $fields )
-			->leftJoin( 'uqb_posts as ap', '`ap`.`post_id` = `p`.`ID`' )
-			->where( 'p.post_status', 'attachment' === $includedPostTypes ? 'inherit' : 'publish' )
-			->whereRaw( "p.post_type IN ( '$includedPostTypes' )" );
-
-		if ( ! is_array( $postTypes ) ) {
-			if ( ! uqb()->helpers->isPostTypeNoindexed( $includedPostTypes ) ) {
-				$query->whereRaw( '( `ap`.`robots_noindex` IS NULL OR `ap`.`robots_default` = 1 OR `ap`.`robots_noindex` = 0 )' );
-			} else {
-				$query->whereRaw( '( `ap`.`robots_default` = 0 AND `ap`.`robots_noindex` = 0 )' );
-			}
-		} else {
-			$robotsMetaSql = [];
-			foreach ( $postTypes as $postType ) {
-				if ( ! uqb()->helpers->isPostTypeNoindexed( $postType ) ) {
-					$robotsMetaSql[] = "( `p`.`post_type` = '$postType' AND ( `ap`.`robots_noindex` IS NULL OR `ap`.`robots_default` = 1 OR `ap`.`robots_noindex` = 0 ) )";
-				} else {
-					$robotsMetaSql[] = "( `p`.`post_type` = '$postType' AND ( `ap`.`robots_default` = 0 AND `ap`.`robots_noindex` = 0 ) )";
-				}
-			}
-			$query->whereRaw( '( ' . implode( ' OR ', $robotsMetaSql ) . ' )' );
-		}
-
-		$excludedPosts = uqb()->sitemap->helpers->excludedPosts();
-		if ( $excludedPosts ) {
-			$query->whereRaw( "( `p`.`ID` NOT IN ( $excludedPosts ) )" );
-		}
+			->where( 'post_status', 'attachment' === $postType ? 'inherit' : 'publish' )
+			->where( 'post_type', $postType );
 
 		// Exclude posts assigned to excluded terms.
-		$excludedTerms = uqb()->sitemap->helpers->excludedTerms();
-		if ( $excludedTerms ) {
-			$termRelationshipsTable = uqb()->db->db->prefix . 'term_relationships';
-			$query->whereRaw("
-				( `p`.`ID` NOT IN
-					(
-						SELECT `tr`.`object_id`
-						FROM `$termRelationshipsTable` as tr
-						WHERE `tr`.`term_taxonomy_id` IN ( $excludedTerms )
-					)
-				)" );
-		}
+		// TODO : implement included terms.
+		// TODO: hide taxonomy and terms if post type page
+		// $excludedTerms = uqb()->sitemap->helpers->excludedTerms();
+		// if ( $excludedTerms ) {
+		// 	$termRelationshipsTable = uqb()->db->db->prefix . 'term_relationships';
+		// 	$query->whereRaw("
+		// 		( `p`.`ID` NOT IN
+		// 			(
+		// 				SELECT `tr`.`object_id`
+		// 				FROM `$termRelationshipsTable` as tr
+		// 				WHERE `tr`.`term_taxonomy_id` IN ( $excludedTerms )
+		// 			)
+		// 		)" );
+		// }
 
 		if ( $maxAge ) {
 			$query->whereRaw( "( `p`.`post_date_gmt` >= '$maxAge' )" );
 		}
 
-		if ( uqb()->sitemap->indexes && empty( $additionalArgs['root'] ) ) {
-			$query->limit( uqb()->sitemap->linksPerIndex, uqb()->sitemap->offset );
-		}
+		echo $query;
 
-		$posts = $query->orderBy( $orderBy )
-			->run()
-			->result();
+		$posts = $query->orderBy( $orderBy )->run()->result();
 
 		// Convert ID from string to int.
 		foreach ( $posts as $post ) {
@@ -121,8 +91,6 @@ class Query {
 	public function filterPosts( $posts ) {
 		$remainingPosts          = [];
 		$isWooCommerceActive     = uqb()->helpers->isWooCommerceActive();
-		$isWooCommerceNoindexing = $isWooCommerceActive && has_action( 'wp_head', 'wc_page_noindex' );
-		$excludeHiddenProducts   = apply_filters( 'uqb_sitemap_woocommerce_exclude_hidden_products', true );
 
 		foreach ( $posts as $post ) {
 			if ( 'product' !== $post->post_type && is_numeric( $post ) ) {
@@ -132,12 +100,10 @@ class Query {
 
 			switch ( $post->post_type ) {
 				case 'page':
-					if ( ! $isWooCommerceNoindexing || ! uqb()->helpers->isWooCommercePage( $post->ID ) ) {
 						$remainingPosts[] = $post;
-					}
 					break;
 				case 'product':
-					if ( ! $isWooCommerceActive || ! $excludeHiddenProducts || ! $this->isHiddenProduct( $post ) ) {
+					if ( ! $this->isHiddenProduct( $post ) ) {
 						$remainingPosts[] = $post;
 					}
 					break;

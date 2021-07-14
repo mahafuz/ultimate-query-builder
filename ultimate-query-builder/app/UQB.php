@@ -2,15 +2,15 @@
 
 namespace UQB\Plugin {
 
-	global $wpdb;
+	// global $wpdb;
 
-	$my_option_name = '_wp_page_template';
-	$query = $wpdb->prepare( "SELECT * FROM $wpdb->postmeta WHERE meta_key = %s", $my_option_name );
-	$results = $wpdb->get_results( $query );
+	// $my_option_name = '_wp_page_template';
+	// $query = $wpdb->prepare( "SELECT * FROM $wpdb->postmeta WHERE meta_key = %s", $my_option_name );
+	// $results = $wpdb->get_results( $query );
 
-	error_log( print_r( $results, 1 ) );
+	// // error_log( print_r( $results, 1 ) );
 
-	return;
+	// return;
 
 	// Exit if accessed directly.
 	if ( ! defined( 'ABSPATH' ) ) {

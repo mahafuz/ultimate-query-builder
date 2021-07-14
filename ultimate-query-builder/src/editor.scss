@@ -4,6 +4,31 @@
  * Replace them with your own styles or remove the file completely.
  */
 
-.wp-block-create-block-ultimate-query-builder {
-	border: 1px dotted #f00;
+.uqb-select-post-type-control-wrap,
+.uqb-select-taxonomy-control-wrap {
+	.searchWrapper {
+		min-height: 40px;
+	}
+
+	.search-wrapper.searchWrapper.singleSelect {
+		position: relative;
+	}
+	
+	.search-wrapper.searchWrapper.singleSelect input#uqb_post_type_input,
+	.search-wrapper.searchWrapper.singleSelect input#uqb_post_taxonomy_input {
+		position: absolute;
+		left: 0;
+		top: 0;
+		height: 100%;
+		width: 100%;
+		margin: 0;
+	}
+
+	span.chip.singleChip {
+		margin: 0;
+	}
+}
+
+.uqb-select-terms-control-wrap .multiSelectContainer input {
+	width: 100%;
 }
